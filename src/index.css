@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* NavBar component styles */
+.nav-bar {
+  @apply flex justify-between max-w-screen-2xl mx-auto px-3 md:px-8 p-6 md:p-8 w-full;
+}
+
+.nav-right-list {
+  @apply flex justify-center items-center;
+}
+
+.nav-message-board-list-item {
+  @apply mx-2 md:mx-4 hover:scale-105 transition-transform;
+}
+
+.nav-message-board-link {
+    @apply font-sans text-xl font-bold leading-none;
+  }
