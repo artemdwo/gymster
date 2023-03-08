@@ -47,3 +47,7 @@ h6 {
 .nav-message-board-link {
   @apply font-sans text-xl font-bold leading-none;
 }
+
+.nav-auth-item {
+  @apply ml-2 mr-6 relative;
+}

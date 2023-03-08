@@ -31,7 +31,9 @@ export function useSession(): GymsterUserInfo {
     if (userInfo.session?.user && !userInfo.profile) {
       listenToUserProfileChanges(userInfo.session.user.id).then(
         (newChannel) => {
-          if (channel) channel.unsubscribe();
+          if (channel) {
+            channel.unsubscribe();
+          }
           setChannel(newChannel);
         }
       );
@@ -46,12 +48,11 @@ export function useSession(): GymsterUserInfo {
       .from("user_profiles")
       .select("*")
       .filter("user_id", "eq", userId);
-
-    if (data && data.length > 0) {
-      setUserInfo({ ...userInfo, profile: data[0] });
+    if (data?.[0]) {
+      setUserInfo({ ...userInfo, profile: data?.[0] });
     }
     return sbClient
-      .channel("public:user_profiles")
+      .channel(`public:user_profiles`)
       .on(
         "postgres_changes",
         {

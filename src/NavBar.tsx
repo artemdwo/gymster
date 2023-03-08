@@ -1,6 +1,9 @@
+import { useContext } from "react";
 import { Link } from "react-router-dom";
+import { UserContext } from "./App";
 
 export default function NavBar() {
+    const { session } = useContext(UserContext);
     return (
         <>
             <nav className="nav-bar navbar-expand-lg navbar-light bg-light">
@@ -11,18 +14,21 @@ export default function NavBar() {
                 <ul className="nav-right-list">
                     <li className="nav-message-board-list-item">
                         <Link className="nav-message-board-link" to="/1">
-                            Exercises
+                            Link 1
                         </Link>
                     </li>
                     <li className="nav-message-board-list-item">
                         <Link className="nav-message-board-link" to="/1">
-                            Exercises
+                            Link 2
                         </Link>
                     </li>
                     <li className="nav-message-board-list-item">
                         <Link className="nav-message-board-link" to="/1">
-                            Exercises
+                            Link 3
                         </Link>
+                    </li>
+                    <li className="nav-auth-item">
+                        {session?.user ? 'IN' : 'OUT'}
                     </li>
                 </ul>
             </nav>
