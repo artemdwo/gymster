@@ -4,7 +4,7 @@ import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import Dashboard from "./Dashboard";
 import ExerciseList from "./ExerciseList";
 import ExerciseDetails from "./ExerciseDetails";
-import Welcome from "./Welcome";
+import Welcome, { welcomeLoader } from "./Welcome";
 import NavBar from "./NavBar";
 import { useSession, GymsterUserInfo } from "./use-session";
 
@@ -20,18 +20,17 @@ const router = createBrowserRouter([
           {
             path: ":pageNumber",
             element: <ExerciseList />,
-            children: [],
           },
           {
             path: "exercise/:exerciseId",
             element: <ExerciseDetails />,
-            children: [],
           },
         ],
       },
       {
         path: "welcome",
         element: <Welcome />,
+        loader: welcomeLoader,
       },
     ],
   },

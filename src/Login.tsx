@@ -3,6 +3,7 @@ import { UserContext } from "./App";
 import Dialog from "./Dialog";
 import { sbClient } from "./sb-client";
 import { Auth } from "@supabase/auth-ui-react";
+import { setReturnPath } from "./use-session";
 
 export default function Login() {
   const [showModal, setShowModal] = useState(false);
@@ -20,22 +21,26 @@ export default function Login() {
       <div className="flex m-4 place-items-center">
         <button
           className="login-button"
+          data-testid="login-button"
           onClick={() => {
             setAuthMode("sign_in");
             setShowModal(true);
+            setReturnPath();
           }}
         >
-          login
+          Login
         </button>{" "}
         <span className="p-2"> or </span>{" "}
         <button
           className="login-button"
+          data-testid="register-button"
           onClick={() => {
             setAuthMode("sign_up");
             setShowModal(true);
+            setReturnPath();
           }}
         >
-          sign up
+          Register
         </button>
       </div>
       <Dialog

@@ -1,5 +1,6 @@
 import { RealtimeChannel, Session } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { sbClient } from "./sb-client";
 
 export interface UserProfile {
@@ -17,6 +18,7 @@ export function useSession(): GymsterUserInfo {
     profile: null,
   });
   const [channel, setChannel] = useState<RealtimeChannel | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     sbClient.auth.getSession().then(({ data: { session } }) => {
@@ -50,6 +52,9 @@ export function useSession(): GymsterUserInfo {
       .filter("user_id", "eq", userId);
     if (data?.[0]) {
       setUserInfo({ ...userInfo, profile: data?.[0] });
+    } else {
+      setReturnPath();
+      navigate("/welcome");
     }
     return sbClient
       .channel(`public:user_profiles`)
@@ -70,3 +75,7 @@ export function useSession(): GymsterUserInfo {
 
   return userInfo;
 }
+
+export const setReturnPath = () => {
+  localStorage.setItem("returnPath", window.location.pathname);
+};

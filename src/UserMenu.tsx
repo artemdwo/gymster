@@ -8,10 +8,11 @@ export default function UserMenu() {
   return (
     <>
       <div className="flex flex-col">
-        <h2>Welcome {profile?.username || "dawg"}.</h2>
+        <h2>Welcome {profile?.username || "mate"}!</h2>
         <button
           onClick={() => sbClient.auth.signOut()}
           className="user-menu-logout-button"
+          data-testid="logout-button"
         >
           Logout
         </button>
