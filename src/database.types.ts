@@ -34,6 +34,101 @@ export interface Database {
   }
   public: {
     Tables: {
+      exercise_history: {
+        Row: {
+          created_at: string
+          exercise_details: Json
+          exercise_type_id: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          exercise_details: Json
+          exercise_type_id: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          exercise_details?: Json
+          exercise_type_id?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+      }
+      exercise_notes: {
+        Row: {
+          created_at: string
+          id: string
+          notes_contents: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes_contents: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes_contents?: string
+          updated_at?: string
+          user_id?: string
+        }
+      }
+      exercise_tags: {
+        Row: {
+          created_at: string
+          id: string
+          tag_name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          tag_name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          tag_name?: string
+          user_id?: string
+        }
+      }
+      exercise_types: {
+        Row: {
+          created_at: string
+          exercise_name: string
+          exercise_type: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          exercise_name: string
+          exercise_type: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          exercise_name?: string
+          exercise_type?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+      }
       user_profiles: {
         Row: {
           created_at: string
