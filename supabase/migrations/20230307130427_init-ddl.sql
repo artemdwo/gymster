@@ -34,74 +34,75 @@ TO public
 USING (auth.uid() = user_id) 
 WITH CHECK (auth.uid() = user_id);
 
-CREATE TABLE
-    exercise_types (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
-        user_id UUID REFERENCES auth.users (id) NOT NULL,
-        exercise_type TEXT NOT NULL,
-        exercise_name TEXT NOT NULL,
-        created_at timestamptz NOT NULL DEFAULT now (),
-        updated_at timestamptz NOT NULL DEFAULT now ()
-    );
+CREATE TABLE workouts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
+    user_id UUID REFERENCES auth.users (id) NOT NULL,
+    workout_name TEXT,
+    exercise_id UUID REFERENCES exercises (id) NOT NULL,
+    tag_id UUID REFERENCES tags (id) NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now (),
+    updated_at timestamptz NOT NULL DEFAULT now ()
+);    
 
-ALTER TABLE exercise_types ENABLE ROW LEVEL SECURITY;
+ALTER TABLE workouts ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "anyone can access exercise_types" 
-ON public.exercise_types 
+CREATE POLICY "only owner can access workouts" 
+ON public.workouts 
+AS PERMISSIVE FOR ALL 
+TO public 
+USING (auth.uid() = user_id) 
+WITH CHECK (auth.uid() = user_id);
+
+CREATE TABLE exercises (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
+    user_id UUID REFERENCES auth.users (id) NOT NULL,
+    workout_id UUID REFERENCES workouts (id) NOT NULL,
+    tag_id UUID REFERENCES tags (id) NOT NULL,
+    exercise_name TEXT NOT NULL,
+    exercise_type TEXT NOT NULL,
+    exercise_details JSON NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now (),
+    updated_at timestamptz NOT NULL DEFAULT now ()
+);
+
+ALTER TABLE exercises ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "only owner can access exercises" 
+ON public.exercises 
+AS PERMISSIVE FOR ALL 
+TO public 
+USING (auth.uid() = user_id) 
+WITH CHECK (auth.uid() = user_id);
+
+CREATE TABLE sets (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
+    user_id UUID REFERENCES auth.users (id) NOT NULL,
+    exercise_id UUID REFERENCES exercises (id) NOT NULL,
+    set_number INT NOT NULL,
+    set_reps INT NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now ()
+);
+
+ALTER TABLE sets ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "only owner can access sets" 
+ON public.sets 
+AS PERMISSIVE FOR ALL 
+TO public 
+USING (auth.uid() = user_id) 
+WITH CHECK (auth.uid() = user_id);
+
+CREATE TABLE tags (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
+    user_id UUID REFERENCES auth.users (id) NOT NULL,
+    tags TEXT NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now ()
+);
+
+ALTER TABLE tags ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "anyone can access tags" 
+ON public.tags 
 AS PERMISSIVE FOR SELECT 
 TO public 
 USING (true);
-
-CREATE TABLE
-    exercise_history (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
-        user_id UUID REFERENCES auth.users (id) NOT NULL,
-        exercise_type_id UUID REFERENCES exercise_types (id) NOT NULL,
-        exercise_details JSON NOT NULL,
-        created_at timestamptz NOT NULL DEFAULT now (),
-        updated_at timestamptz NOT NULL DEFAULT now ()
-    );
-
-ALTER TABLE exercise_history ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "only owner can access exercise_history" 
-ON public.exercise_history 
-AS PERMISSIVE FOR ALL 
-TO public 
-USING (auth.uid() = user_id) 
-WITH CHECK (auth.uid() = user_id);
-
-CREATE TABLE
-    exercise_tags (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
-        user_id UUID REFERENCES auth.users (id) NOT NULL,
-        tag_name TEXT NOT NULL,
-        created_at timestamptz NOT NULL DEFAULT now ()
-    );
-
-ALTER TABLE exercise_tags ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "only owner can access exercise_tags" 
-ON public.exercise_tags 
-AS PERMISSIVE FOR ALL 
-TO public 
-USING (auth.uid() = user_id) 
-WITH CHECK (auth.uid() = user_id);
-
-CREATE TABLE
-    exercise_notes (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
-        user_id UUID REFERENCES auth.users (id) NOT NULL,
-        notes_contents TEXT NOT NULL,
-        created_at timestamptz NOT NULL DEFAULT now (),
-        updated_at timestamptz NOT NULL DEFAULT now ()
-    );
-
-ALTER TABLE exercise_notes ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "only owner can access exercise_notes" 
-ON public.exercise_notes 
-AS PERMISSIVE FOR ALL 
-TO public 
-USING (auth.uid() = user_id) 
-WITH CHECK (auth.uid() = user_id);
