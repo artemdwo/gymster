@@ -34,29 +34,24 @@ TO public
 USING (auth.uid() = user_id) 
 WITH CHECK (auth.uid() = user_id);
 
-CREATE TABLE workouts (
+CREATE TABLE tags (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
     user_id UUID REFERENCES auth.users (id) NOT NULL,
-    workout_name TEXT,
-    exercise_id UUID REFERENCES exercises (id) NOT NULL,
-    tag_id UUID REFERENCES tags (id) NOT NULL,
-    created_at timestamptz NOT NULL DEFAULT now (),
-    updated_at timestamptz NOT NULL DEFAULT now ()
-);    
+    tags TEXT NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now ()
+);
 
-ALTER TABLE workouts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tags ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "only owner can access workouts" 
-ON public.workouts 
-AS PERMISSIVE FOR ALL 
+CREATE POLICY "anyone can access tags" 
+ON public.tags 
+AS PERMISSIVE FOR SELECT 
 TO public 
-USING (auth.uid() = user_id) 
-WITH CHECK (auth.uid() = user_id);
+USING (true);
 
 CREATE TABLE exercises (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
     user_id UUID REFERENCES auth.users (id) NOT NULL,
-    workout_id UUID REFERENCES workouts (id) NOT NULL,
     tag_id UUID REFERENCES tags (id) NOT NULL,
     exercise_name TEXT NOT NULL,
     exercise_type TEXT NOT NULL,
@@ -92,17 +87,21 @@ TO public
 USING (auth.uid() = user_id) 
 WITH CHECK (auth.uid() = user_id);
 
-CREATE TABLE tags (
+CREATE TABLE workouts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
     user_id UUID REFERENCES auth.users (id) NOT NULL,
-    tags TEXT NOT NULL,
-    created_at timestamptz NOT NULL DEFAULT now ()
-);
+    workout_name TEXT,
+    exercise_id UUID REFERENCES exercises (id) NOT NULL,
+    tag_id UUID REFERENCES tags (id) NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now (),
+    updated_at timestamptz NOT NULL DEFAULT now ()
+);    
 
-ALTER TABLE tags ENABLE ROW LEVEL SECURITY;
+ALTER TABLE workouts ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "anyone can access tags" 
-ON public.tags 
-AS PERMISSIVE FOR SELECT 
+CREATE POLICY "only owner can access workouts" 
+ON public.workouts 
+AS PERMISSIVE FOR ALL 
 TO public 
-USING (true);
+USING (auth.uid() = user_id) 
+WITH CHECK (auth.uid() = user_id);
