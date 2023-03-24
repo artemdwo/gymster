@@ -1,6 +1,6 @@
 CREATE TABLE
     user_profiles (
-        user_id UUID PRIMARY KEY REFERENCES auth.users (id) NOT NULL,
+        user_id UUID PRIMARY KEY REFERENCES auth.users(id) NOT NULL,
         username TEXT UNIQUE NOT NULL,
         created_at timestamptz NOT NULL DEFAULT now (),
         updated_at timestamptz NOT NULL DEFAULT now (),
@@ -34,74 +34,57 @@ TO public
 USING (auth.uid() = user_id) 
 WITH CHECK (auth.uid() = user_id);
 
-CREATE TABLE tags (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
-    user_id UUID REFERENCES auth.users (id) NOT NULL,
-    tags TEXT NOT NULL,
-    created_at timestamptz NOT NULL DEFAULT now ()
+CREATE TABLE workouts (
+    workout_id SERIAL NOT NULL PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES auth.users(id),
+    workout_name TEXT NOT NULL,
+    workout_date DATE NOT NULL,
+    notes TEXT,
+    tags TEXT[]
 );
-
-ALTER TABLE tags ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "anyone can access tags" 
-ON public.tags 
-AS PERMISSIVE FOR SELECT 
-TO public 
-USING (true);
 
 CREATE TABLE exercises (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
-    user_id UUID REFERENCES auth.users (id) NOT NULL,
-    tag_id UUID REFERENCES tags (id) NOT NULL,
+    exercise_id SERIAL NOT NULL PRIMARY KEY,
+    workout_id INTEGER NOT NULL REFERENCES workouts(workout_id),
     exercise_name TEXT NOT NULL,
-    exercise_type TEXT NOT NULL,
-    exercise_details JSON NOT NULL,
-    created_at timestamptz NOT NULL DEFAULT now (),
-    updated_at timestamptz NOT NULL DEFAULT now ()
+    notes TEXT,
+    tags TEXT[]
 );
-
-ALTER TABLE exercises ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "only owner can access exercises" 
-ON public.exercises 
-AS PERMISSIVE FOR ALL 
-TO public 
-USING (auth.uid() = user_id) 
-WITH CHECK (auth.uid() = user_id);
 
 CREATE TABLE sets (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
-    user_id UUID REFERENCES auth.users (id) NOT NULL,
-    exercise_id UUID REFERENCES exercises (id) NOT NULL,
-    set_number INT NOT NULL,
-    set_reps INT NOT NULL,
-    created_at timestamptz NOT NULL DEFAULT now ()
+    set_id SERIAL NOT NULL PRIMARY KEY,
+    exercise_id INTEGER NOT NULL REFERENCES exercises(exercise_id),
+    set_number INTEGER NOT NULL,
+    weight FLOAT NOT NULL,
+    reps INTEGER NOT NULL,
+    tags TEXT[]
 );
 
-ALTER TABLE sets ENABLE ROW LEVEL SECURITY;
+CREATE POLICY workouts_policy ON workouts FOR ALL TO public USING (user_id = auth.uid());
 
-CREATE POLICY "only owner can access sets" 
-ON public.sets 
-AS PERMISSIVE FOR ALL 
-TO public 
-USING (auth.uid() = user_id) 
-WITH CHECK (auth.uid() = user_id);
+CREATE FUNCTION check_exercises_policy(user_id UUID, exercise_id INTEGER)
+RETURNS boolean
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM workouts
+    WHERE workout_id = (SELECT workout_id FROM exercises WHERE exercise_id = $2)
+      AND user_id = $1
+  );
+$$ LANGUAGE SQL;
 
-CREATE TABLE workouts (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
-    user_id UUID REFERENCES auth.users (id) NOT NULL,
-    workout_name TEXT,
-    exercise_id UUID REFERENCES exercises (id) NOT NULL,
-    tag_id UUID REFERENCES tags (id) NOT NULL,
-    created_at timestamptz NOT NULL DEFAULT now (),
-    updated_at timestamptz NOT NULL DEFAULT now ()
-);    
+CREATE POLICY exercises_policy ON exercises FOR ALL TO public USING (check_exercises_policy(auth.uid()::UUID, exercise_id::INTEGER));
 
-ALTER TABLE workouts ENABLE ROW LEVEL SECURITY;
+CREATE FUNCTION check_sets_policy(user_id UUID, set_id INTEGER)
+RETURNS boolean
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM workouts
+    JOIN exercises ON workouts.workout_id = exercises.workout_id
+    WHERE exercises.exercise_id = (SELECT exercise_id FROM sets WHERE set_id = $2)
+      AND user_id = $1
+  );
+$$ LANGUAGE SQL;
 
-CREATE POLICY "only owner can access workouts" 
-ON public.workouts 
-AS PERMISSIVE FOR ALL 
-TO public 
-USING (auth.uid() = user_id) 
-WITH CHECK (auth.uid() = user_id);
+CREATE POLICY sets_policy ON sets FOR ALL TO public USING (check_sets_policy(auth.uid()::UUID, set_id::INTEGER));
