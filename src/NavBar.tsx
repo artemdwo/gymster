@@ -21,17 +21,22 @@ export default function NavBar() {
 
         <ul className="nav-right-list">
           <li className="nav-message-board-list-item">
-            <Link className="nav-message-board-link" to="/1">
+            <Link className="nav-message-board-link" to="/history">
+              History
+            </Link>
+          </li>
+          <li className="nav-message-board-list-item">
+            <Link className="nav-message-board-link" to="/">
               Link 1
             </Link>
           </li>
           <li className="nav-message-board-list-item">
-            <Link className="nav-message-board-link" to="/1">
+            <Link className="nav-message-board-link" to="/">
               Link 2
             </Link>
           </li>
           <li className="nav-message-board-list-item">
-            <Link className="nav-message-board-link" to="/1">
+            <Link className="nav-message-board-link" to="/">
               Link 3
             </Link>
           </li>
