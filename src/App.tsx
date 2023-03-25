@@ -2,11 +2,12 @@ import { createContext, useState } from "react";
 import "./App.css";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import Dashboard from "./Dashboard";
-import ExerciseList from "./ExerciseList";
+import {ExerciseList} from "./ExerciseList";
 import ExerciseDetails from "./ExerciseDetails";
 import Welcome, { welcomeLoader } from "./Welcome";
 import NavBar from "./NavBar";
 import { useSession, GymsterUserInfo } from "./use-session";
+import WorkoutHistory from "./WorkoutHistory";
 
 const router = createBrowserRouter([
   {
@@ -17,13 +18,17 @@ const router = createBrowserRouter([
         path: "",
         element: <Dashboard />,
         children: [
+          // {
+          //   path: ":pageNumber",
+          //   element: <ExerciseList />,
+          // },
+          // {
+          //   path: "exercise/:exerciseId",
+          //   element: <ExerciseDetails />,
+          // },
           {
-            path: ":pageNumber",
-            element: <ExerciseList />,
-          },
-          {
-            path: "exercise/:exerciseId",
-            element: <ExerciseDetails />,
+            path: "history",
+            element: <WorkoutHistory />,
           },
         ],
       },
