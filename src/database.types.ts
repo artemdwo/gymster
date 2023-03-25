@@ -34,99 +34,53 @@ export interface Database {
   }
   public: {
     Tables: {
-      exercise_history: {
+      exercises: {
         Row: {
-          created_at: string
-          exercise_details: Json
-          exercise_type_id: string
-          id: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          exercise_details: Json
-          exercise_type_id: string
-          id?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          exercise_details?: Json
-          exercise_type_id?: string
-          id?: string
-          updated_at?: string
-          user_id?: string
-        }
-      }
-      exercise_notes: {
-        Row: {
-          created_at: string
-          id: string
-          notes_contents: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          notes_contents: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          notes_contents?: string
-          updated_at?: string
-          user_id?: string
-        }
-      }
-      exercise_tags: {
-        Row: {
-          created_at: string
-          id: string
-          tag_name: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          tag_name: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          tag_name?: string
-          user_id?: string
-        }
-      }
-      exercise_types: {
-        Row: {
-          created_at: string
+          exercise_id: number
           exercise_name: string
-          exercise_type: string
-          id: string
-          updated_at: string
-          user_id: string
+          notes: string | null
+          tags: string[] | null
+          workout_id: number
         }
         Insert: {
-          created_at?: string
+          exercise_id?: number
           exercise_name: string
-          exercise_type: string
-          id?: string
-          updated_at?: string
-          user_id: string
+          notes?: string | null
+          tags?: string[] | null
+          workout_id: number
         }
         Update: {
-          created_at?: string
+          exercise_id?: number
           exercise_name?: string
-          exercise_type?: string
-          id?: string
-          updated_at?: string
-          user_id?: string
+          notes?: string | null
+          tags?: string[] | null
+          workout_id?: number
+        }
+      }
+      sets: {
+        Row: {
+          exercise_id: number
+          reps: number
+          set_id: number
+          set_number: number
+          tags: string[] | null
+          weight: number
+        }
+        Insert: {
+          exercise_id: number
+          reps: number
+          set_id?: number
+          set_number: number
+          tags?: string[] | null
+          weight: number
+        }
+        Update: {
+          exercise_id?: number
+          reps?: number
+          set_id?: number
+          set_number?: number
+          tags?: string[] | null
+          weight?: number
         }
       }
       user_profiles: {
@@ -149,12 +103,51 @@ export interface Database {
           username?: string
         }
       }
+      workouts: {
+        Row: {
+          notes: string | null
+          tags: string[] | null
+          user_id: string
+          workout_date: string
+          workout_id: number
+          workout_name: string
+        }
+        Insert: {
+          notes?: string | null
+          tags?: string[] | null
+          user_id: string
+          workout_date: string
+          workout_id?: number
+          workout_name: string
+        }
+        Update: {
+          notes?: string | null
+          tags?: string[] | null
+          user_id?: string
+          workout_date?: string
+          workout_id?: number
+          workout_name?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      check_exercises_policy: {
+        Args: {
+          user_id: string
+          exercise_id: number
+        }
+        Returns: boolean
+      }
+      check_sets_policy: {
+        Args: {
+          user_id: string
+          set_id: number
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
